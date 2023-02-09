@@ -2,6 +2,8 @@
 name = "async_first"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+description = "A simple app that loads files asynchronously on desktop and web"
 
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = false

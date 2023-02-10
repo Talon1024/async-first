@@ -12,7 +12,8 @@ use glutin::{
 };
 use glutin_winit::{ApiPrefence, DisplayBuilder};
 use raw_window_handle::HasRawWindowHandle;
-use std::{ffi::CStr, num::NonZeroU32, sync::Arc, future::Future};
+use rfd::AsyncFileDialog;
+use std::{ffi::CStr, num::NonZeroU32, sync::Arc, future::Future, fs::File, io::Write};
 use winit::{
     dpi::PhysicalSize,
     event_loop::EventLoopWindowTarget,
@@ -101,4 +102,22 @@ pub(crate) fn show_window<CE>(win: &Window, el: &EventLoopWindowTarget<CE>, _ctx
         dsp.get_proc_address(name)
     }) };
     (WindowContext {wc, surf}, Arc::new(glc))
+}
+
+pub(crate) async fn save_file(contents: Vec<u8>, fname: &str, _ftype: &str) {
+    let fhandle = AsyncFileDialog::new()
+        .set_file_name(&fname)
+        .save_file().await;
+    if let Some(fhandle) = fhandle {
+        let fpath = fhandle.path();
+        let file = File::create(fpath);
+        match file {
+            Ok(mut file) => {
+                if let Err(e) = file.write_all(&contents) {
+                    eprintln!("{e:?}");
+                }
+            },
+            Err(e) => { eprintln!("{e:?}"); }
+        }
+    }
 }

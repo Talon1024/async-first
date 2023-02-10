@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use glow::HasContext;
 use platform::DrawingContextRequest;
+use rfd::AsyncFileDialog;
 use winit::{
     window::WindowBuilder,
     event_loop::EventLoopBuilder,
@@ -84,7 +85,7 @@ pub fn main() {
                                 if ui.button("Open").clicked() {
                                     let elp = elp.clone(); // Prevent Send/Sync-related issues
                                     platform::spawn_local(async move {
-                                        let file_handle = rfd::AsyncFileDialog::new().pick_file().await;
+                                        let file_handle = AsyncFileDialog::new().pick_file().await;
                                         let return_message = if let Some(file_handle) = file_handle {
                                             let file_contents = file_handle.read().await;
                                             let file_text = String::from_utf8(file_contents);
@@ -99,6 +100,11 @@ pub fn main() {
                                         };
                                         elp.send_event(AppEvent::NewMessage(return_message)).unwrap();
                                     });
+                                    ui.close_menu();
+                                }
+                                if ui.button("Save").clicked() {
+                                    let contents = message.clone().unwrap_or(String::new()).into_bytes();
+                                    platform::spawn_local(platform::save_file(contents, "", "text/plain"));
                                     ui.close_menu();
                                 }
                                 if ui.button("Exit").clicked() {

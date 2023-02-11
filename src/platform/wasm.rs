@@ -89,7 +89,7 @@ pub(crate) async fn save_file(contents: Vec<u8>, fname: &str) {
     let base64 = if is_text { "" } else { ";base64" };
     let data = if !is_text {
         let engine = base64::engine::general_purpose::URL_SAFE;
-        engine.encode(contents)
+        engine.encode(&contents)
     } else {
         percent_encoding::percent_encode(&contents, percent_encoding::NON_ALPHANUMERIC).collect()
     };

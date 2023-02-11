@@ -2,7 +2,7 @@ use std::{panic, sync::Arc, future::Future};
 use base64::Engine;
 use glow::Context;
 use wasm_bindgen::{prelude::*, JsValue};
-use web_sys::{window, WebGl2RenderingContext, console, WebGlRenderingContext};
+use web_sys::{window, WebGl2RenderingContext, console, WebGlRenderingContext, HtmlElement};
 use winit::{
     event_loop::EventLoopWindowTarget,
     window::Window,
@@ -69,12 +69,18 @@ pub(crate) async fn save_file(contents: Vec<u8>, fname: &str) {
     let bwindow = window().expect("No window!");
     let document = bwindow.document().expect("No document!");
     let body = document.body().expect("No body!");
-    let anchor = document.create_element("a").expect("`a` should be a valid element name");
-    let a_text = document.create_text_node("💾 Save");
-    anchor.append_child(&a_text).expect("No text on download button");
+    let anchor = match document.get_element_by_id("app-downloader") {
+        Some(el) => el,
+        None => {
+            let el = document.create_element("a").expect("`a` should be a valid element name");
+            el.set_id("app-downloader");
+            body.append_child(&el).expect("Could not add downloader to document!");
+            el
+        }
+    }.dyn_into::<HtmlElement>().expect("anchor is not an HTML element!");
     // Download and class attributes
     anchor.set_attribute("download", fname).expect("`download` should be a valid attribute name");
-    anchor.set_attribute("class", "download_button").expect("`class` should be a valid attribute name");
+    anchor.set_attribute("style", "display: none;").expect("`style` should be a valid attribute name");
     // The data to download
     let (is_text, ftype) = match String::from_utf8(contents.clone()).is_ok() {
         true => (true, "text/plain"),
@@ -89,7 +95,5 @@ pub(crate) async fn save_file(contents: Vec<u8>, fname: &str) {
     };
     let href = format!("data:{ftype}{base64},{data}");
     anchor.set_attribute("href", &href).expect("`href` should be a valid attribute name");
-    // Event listeners
-    // anchor.add_event_listener_with_callback("mouseup", &super::wasm_fns::kill_download_button);
-    body.append_child(&anchor).expect("Could not add anchor to document");
+    anchor.click();
 }

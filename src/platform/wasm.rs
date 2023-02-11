@@ -65,7 +65,7 @@ macro_rules! set_attribute {
 }
  */
 
-pub(crate) async fn save_file(contents: Vec<u8>, fname: &str, ftype: &str) {
+pub(crate) async fn save_file(contents: Vec<u8>, fname: &str) {
     let bwindow = window().expect("No window!");
     let document = bwindow.document().expect("No document!");
     let body = document.body().expect("No body!");
@@ -76,8 +76,12 @@ pub(crate) async fn save_file(contents: Vec<u8>, fname: &str, ftype: &str) {
     anchor.set_attribute("download", fname).expect("`download` should be a valid attribute name");
     anchor.set_attribute("class", "download_button").expect("`class` should be a valid attribute name");
     // The data to download
-    let base64 = if ftype == "text/plain" { "" } else { ";base64" };
-    let data = if !base64.is_empty() {
+    let (is_text, ftype) = match String::from_utf8(contents.clone()).is_ok() {
+        true => (true, "text/plain"),
+        false => (false, "application/octet-stream"),
+    };
+    let base64 = if is_text { "" } else { ";base64" };
+    let data = if !is_text {
         let engine = base64::engine::general_purpose::URL_SAFE;
         engine.encode(contents)
     } else {

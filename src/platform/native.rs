@@ -104,7 +104,7 @@ pub(crate) fn show_window<CE>(win: &Window, el: &EventLoopWindowTarget<CE>, _ctx
     (WindowContext {wc, surf}, Arc::new(glc))
 }
 
-pub(crate) async fn save_file(contents: Vec<u8>, fname: &str, _ftype: &str) {
+pub(crate) async fn save_file(contents: Vec<u8>, fname: &str) {
     let fhandle = AsyncFileDialog::new()
         .set_file_name(&fname)
         .save_file().await;

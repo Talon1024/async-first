@@ -104,7 +104,7 @@ pub fn main() {
                                 }
                                 if ui.button("Save").clicked() {
                                     let contents = message.clone().unwrap_or(String::new()).into_bytes();
-                                    platform::spawn_local(platform::save_file(contents, "", "text/plain"));
+                                    platform::spawn_local(platform::save_file(contents, ""));
                                     ui.close_menu();
                                 }
                                 if ui.button("Exit").clicked() {

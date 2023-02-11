@@ -8,8 +8,6 @@ mod wasm;
 #[cfg(target_family="wasm")]
 mod wasm_run;
 #[cfg(target_family="wasm")]
-mod wasm_fns;
-#[cfg(target_family="wasm")]
 pub(crate) use wasm::*;
 
 #[non_exhaustive]

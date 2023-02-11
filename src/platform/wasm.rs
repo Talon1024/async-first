@@ -1,4 +1,4 @@
-use std::{panic, sync::Arc, future::Future};
+use std::{panic, str, sync::Arc, future::Future};
 use base64::Engine;
 use glow::Context;
 use wasm_bindgen::{prelude::*, JsValue};
@@ -82,7 +82,7 @@ pub(crate) async fn save_file(contents: Vec<u8>, fname: &str) {
     anchor.set_attribute("download", fname).expect("`download` should be a valid attribute name");
     anchor.set_attribute("style", "display: none;").expect("`style` should be a valid attribute name");
     // The data to download
-    let (is_text, ftype) = match String::from_utf8(contents.clone()).is_ok() {
+    let (is_text, ftype) = match str::from_utf8(&contents).is_ok() {
         true => (true, "text/plain"),
         false => (false, "application/octet-stream"),
     };

@@ -1,13 +1,20 @@
-body { margin: 0; }
+body.app-running {
+	margin: 0;
+	overflow: hidden;
+}
 
-.download_button {
+.error-message {
 	display: block;
-	margin: 0 auto;
-	width: fit-content;
-	padding: 4px;
-	border-radius: 4px;
-	background: linear-gradient(#1fc0ff, #436f92);
-	color: #fff;
-	text-decoration: none;
-	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, Ubuntu, sans-serif;
+	max-width: fit-content;
+	margin: 20px auto;
+	padding: 10px;
+	border-radius: 12px;
+	background: linear-gradient(rgb(255, 183, 183), rgb(255, 82, 82));
+	color: #000;
+}
+.error-message > pre {
+	margin: 8px 0;
+}
+.error-message:empty {
+	display: none;
 }

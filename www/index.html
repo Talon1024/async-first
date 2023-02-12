@@ -8,12 +8,20 @@
 	<link rel="stylesheet" type="text/css" href="css.css"/>
 </head>
 <body>
+	<div id="app-error" class="error-message"></div>
 	<script type="module">
 		import init, {run} from "../pkg/async_first.js";
 		init("../pkg/async_first_bg.wasm").then(() => {
 			run();
 		}).catch((e) => {
-			console.error(e);
+			// winit fake error
+			if (e.message !== "Using exceptions for control flow, don't mind me. This isn't actually an error!") {
+				console.error(e);
+				const errorToast = document.getElementById("app-error");
+				const errorText = document.createElement("pre");
+				errorText.appendChild(document.createTextNode(e.toString()));
+				errorToast.appendChild(errorText);
+			}
 		});
 	</script>
 </body>

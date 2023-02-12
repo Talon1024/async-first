@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{sync::Arc, rc::Rc};
 use glow::HasContext;
 use platform::DrawingContextRequest;
 use rfd::AsyncFileDialog;
@@ -9,16 +9,13 @@ use winit::{
     event::Event,
 };
 use egui_glow::EguiGlow;
-#[cfg(target_family = "wasm")]
-use wasm_bindgen::JsValue;
 
-/* 
-async fn some_random_num() -> u8 {
-    let mut the_byte = 7;
-    getrandom::getrandom(slice::from_mut(&mut the_byte)).unwrap();
-    the_byte
-}
- */
+#[cfg(target_family = "wasm")]
+use wasm_bindgen::{prelude::*, JsValue};
+#[cfg(target_family = "wasm")]
+use winit::dpi::PhysicalSize;
+#[cfg(target_family = "wasm")]
+use js_sys::{Function, Object};
 
 #[derive(Debug, Clone)]
 enum AppEvent {
@@ -29,12 +26,29 @@ pub fn main() {
     platform::init();
     let el = EventLoopBuilder::<AppEvent>::with_user_event().build();
     let elp = el.create_proxy();
-    let win = WindowBuilder::new().with_title("Practice").build(&el)
-        .expect("Unable to create window!");
+    let win = Rc::new(WindowBuilder::new().with_title("Practice").build(&el)
+        .expect("Unable to create window!"));
     let (wc, glc) = platform::show_window(&win, &el, DrawingContextRequest::OpenGL);
     let mut show_quit_window = false;
     let mut message = Some(String::from("The first line of the selected file will be appended to this string."));
     let mut egui_glow = EguiGlow::new(&el, Arc::clone(&glc), None);
+    #[cfg(target_family = "wasm")]
+    {
+        let window = web_sys::window().expect("No window!");
+        let root = window.document().expect("No document!")
+            .document_element().expect("No root element!");
+        window.document().expect("No document!").body().expect("No body!")
+            .set_class_name("app-running");
+        let win = Rc::clone(&win);
+        let cb: Closure<dyn Fn()> = Closure::new(move || {
+            let width = root.client_width();
+            let height = root.client_height();
+            win.set_inner_size(PhysicalSize::new(width, height));
+        });
+        cb.as_ref().unchecked_ref::<Function>().call0(Object::new().as_ref())
+            .expect("Could not resize the canvas!");
+        window.add_event_listener_with_callback("resize", cb.into_js_value().unchecked_ref()).expect("Could not add event listener!");
+    }
     el.run(move |event, _el, control_flow| {
         match event {
             Event::WindowEvent { window_id: _, event } => {

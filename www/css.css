@@ -12,6 +12,9 @@ body.app-running {
 	background: linear-gradient(rgb(255, 183, 183), rgb(255, 82, 82));
 	color: #000;
 }
+.error-message::after {
+	content: "See the console (developer tools) for more details.";
+}
 .error-message > pre {
 	margin: 8px 0;
 }

@@ -74,6 +74,9 @@ pub fn main() {
                 }
             }
             Event::MainEventsCleared => {
+                if show_quit_window {
+                    control_flow.set_exit_with_code(0);
+                }
                 unsafe {
                     glc.clear_color(0.0, 0.0, 0.0, 1.0);
                     glc.clear(glow::COLOR_BUFFER_BIT | glow::DEPTH_BUFFER_BIT);

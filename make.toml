@@ -1,0 +1,8 @@
+[tasks.build-wasm]
+command = "wasm-pack"
+args = ["build", "--target", "web"]
+
+[tasks.serve]
+command = "python3"
+args = ["-m", "http.server"]
+dependencies = ["build-wasm"]

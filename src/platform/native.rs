@@ -1,6 +1,4 @@
-use futures::{
-    executor::ThreadPool,
-};
+use futures::executor::ThreadPool;
 use glutin::{
     config::{Api, ConfigTemplateBuilder},
     context::{

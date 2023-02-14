@@ -125,10 +125,11 @@ pub fn main() {
                                     ui.close_menu();
                                 }
                                 if ui.button("Exit").clicked() {
-                                    #[cfg(not(target_family = "wasm"))]
+                                    /* #[cfg(not(target_family = "wasm"))]
                                     { control_flow.set_exit_with_code(0); }
                                     #[cfg(target_family = "wasm")]
-                                    { show_quit_window = true; }
+                                    { show_quit_window = true; } */
+                                    show_quit_window = true;
                                     ui.close_menu();
                                 }
                             });
